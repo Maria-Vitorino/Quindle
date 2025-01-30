@@ -15,7 +15,8 @@ public:
     PlanoAtual(bool isPro);
 
     
-    void acessarLivro();       
+    void acessarLivro();
+    void resetarLivrosAcessados();   
     int getLimiteLivros() const;  
     int getLivrosAcessados() const; 
 
