@@ -26,7 +26,7 @@ bool verificarLogin(const std::string& email, const std::string& senha, std::str
         std::stringstream ss(linha);
         std::string nomeArquivo, cpf, emailArquivo, senhaArquivo, tipoPlanoArquivo, metodoPagamento, valorPagamento;
 
-       
+        
         std::getline(ss, nomeArquivo, ',');
         std::getline(ss, cpf, ',');
         std::getline(ss, emailArquivo, ',');
@@ -89,9 +89,6 @@ int main() {
         std::getline(std::cin, senha);
 
         if (verificarLogin(email, senha, nome, tipoPlano)) {
-    std::cout << "Login bem-sucedido!" << std::endl;
-    std::cout << "Bem-vindo, " << nome << "!" << std::endl;
-    std::cout << "Seu plano de assinatura: " << tipoPlano << std::endl;
 
     
     int limiteLivros;
@@ -107,15 +104,13 @@ int main() {
     }
 
     int livrosAcessados = 0; 
-    std::cout << "Nome: " << nome << std::endl;
-    std::cout << "Tipo de Assinatura: " << tipoPlano << std::endl;
-    std::cout << "Livros Disponíveis: " << limiteLivros - livrosAcessados << std::endl;
+    
 } else {
     std::cout << "Email ou senha incorretos." << std::endl;
     return 0;
 }
     } else if (opcao == 2){
-    std::cout << "Bem-vindo ao sistema! Por favor, preencha seus dados." << std::endl;
+    std::cout << "\nBem-vindo ao sistema! Por favor, preencha seus dados." << std::endl;
 
     std::cout << "Digite seu nome: ";
     std::getline(std::cin, nome);
@@ -203,13 +198,13 @@ Pagamentos* pagamento = nullptr;
         if ((AcessarLivro == "S" && Limite > resto )  || (AcessarLivro == "s" && Limite > resto)) {
             break;
         } else if((AcessarLivro == "S" && Limite <= resto )  || (AcessarLivro == "s" && Limite <= resto)){
-            std::cout << "Voce chegou ao limite de livros para esse mes. Espere ate o proximo mes para poder ler mais. " << std::endl; 
+            std::cout << "\nVoce chegou ao limite de livros para esse mes. Espere ate o proximo mes para poder ler mais. " << std::endl; 
         }else if (AcessarLivro == "N" || AcessarLivro == "n") {
-            std::cout << "Ok, voltando a pagina inicial." << std::endl;
+            std::cout << "\nOk, voltando a pagina inicial." << std::endl;
         }  else if(AcessarLivro == "F" || AcessarLivro == "f"){
             std::exit(0);
         } else {
-            std::cout << "Comando invalido. Voltando a pagina inicial." << std::endl;
+            std::cout << "\nComando invalido. Voltando a pagina inicial." << std::endl;
         } 
         }
 
@@ -240,7 +235,7 @@ Pagamentos* pagamento = nullptr;
      if (continuaracesso == "S" || continuaracesso == "s") {
           std::cout << "\nVoce continua acessando esse livro" << std::endl;
         } else if (continuaracesso == "N" || continuaracesso == "n") {
-            std::cout << "Ok, voltando a pagina inicial." << std::endl;
+            std::cout << "\nOk, voltando a pagina inicial." << std::endl;
             assinatura.acessarLivro();
            break;
         } else {
