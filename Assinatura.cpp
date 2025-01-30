@@ -1,9 +1,8 @@
 #include "Assinatura.hpp"
-#include "PlanoPro.hpp"  // Incluindo as definições completas de PlanoPro
-#include "PlanoBasico.hpp"  // Incluindo as definições completas de PlanoBasico
+#include "PlanoPro.hpp"  
+#include "PlanoBasico.hpp"  
 #include <iostream>
 
-// Construtor
 Assinatura::Assinatura(bool isPro) : isPro(isPro) {
     if (isPro) {
         planoPro = new PlanoPro();
@@ -14,13 +13,13 @@ Assinatura::Assinatura(bool isPro) : isPro(isPro) {
     }
 }
 
-// Destrutor para liberar a memória alocada
+
 Assinatura::~Assinatura() {
-    delete planoPro;    // Libera o recurso alocado para planoPro, se existente
-    delete planoBasico; // Libera o recurso alocado para planoBasico, se existente
+    delete planoPro;    
+    delete planoBasico; 
 }
 
-// Métodos
+
 void Assinatura::acessarLivro() {
     if (isPro && planoPro) {
         planoPro->acessarLivro();
@@ -45,7 +44,7 @@ int Assinatura::getLimiteLivros() const {
     } else if (planoBasico) {
         return planoBasico->getLimiteLivros();
     }
-    return 0; // Retorna 0 caso nenhum plano esteja definido
+    return 0; 
 }
 
 int Assinatura::getLivrosAcessados() const {

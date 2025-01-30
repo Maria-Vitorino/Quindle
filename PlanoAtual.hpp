@@ -6,24 +6,24 @@
 
 class PlanoAtual {
 private:
-    PlanoBasico* planoBasico; // Ponteiro para o plano básico
-    PlanoPro* planoPro;       // Ponteiro para o plano Pro
-    bool isPro;               // Indica se o plano atual é Pro
+    PlanoBasico* planoBasico; 
+    PlanoPro* planoPro;       
+    bool isPro;               
 
 public:
-    // Construtor que inicializa o plano (Básico ou Pro)
+    
     PlanoAtual(bool isPro);
 
-    // Funções para acessar recursos do plano
-    void acessarLivro();       // Permite acessar um livro
-    int getLimiteLivros() const;  // Retorna o limite de livros do plano atual
-    int getLivrosAcessados() const; // Retorna o número de livros acessados no mês
+    
+    void acessarLivro();       
+    int getLimiteLivros() const;  
+    int getLivrosAcessados() const; 
 
-    // Indica se o plano atual é Pro
+   
     bool getIsPro() const;
 
-    // Destrutor para liberar memória
+    
     ~PlanoAtual();
 };
 
-#endif // PLANOATUAL_HPP
+#endif
