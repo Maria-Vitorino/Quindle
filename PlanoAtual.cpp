@@ -1,15 +1,50 @@
 #include "PlanoAtual.hpp"
 #include <iostream>
 
-PaginaDaConta::PaginaDaConta(std::string nomeUsuario, PlanoAtual* plano)
-    : nomeUsuario(nomeUsuario), plano(plano) {}
+PlanoAtual::PlanoAtual(bool isPro) : isPro(isPro) {
+    if (isPro) {
+        planoPro = new PlanoPro();
+        planoBasico = nullptr;
+    } else {
+        planoBasico = new PlanoBasico();
+        planoPro = nullptr;
+    }
+}
 
-void PaginaDaConta::exibirInformacoes() const {
-    std::cout << "Nome do Usuário: " << nomeUsuario << std::endl;
-    std::cout << "Plano: " << (plano->getIsPro() ? "Pro" : "Basico") << std::endl;
-    std::cout << "Livros Acessados no Mês: " << plano->getLivrosAcessados() << std::endl;
-    std::cout << "Livros Restantes no Mês: " 
-              << plano->getLimiteLivros() - plano->getLivrosAcessados() << std::endl;
+void PlanoAtual::acessarLivro() {
+    if (isPro && planoPro) {
+        planoPro->acessarLivro();
+    } else if (planoBasico) {
+        planoBasico->acessarLivro();
+    } else {
+        std::cout << "Plano não definido." << std::endl;
+    }
+}
+
+void PlanoAtual::resetarLivrosAcessados() {
+    if (isPro && planoPro) {
+        planoPro->resetarLivrosAcessados();
+    } else if (planoBasico) {
+        planoBasico->resetarLivrosAcessados();
+    }
+}
+
+int PlanoAtual::getLimiteLivros() const {
+    if (isPro && planoPro) {
+        return planoPro->getLimiteLivros();
+    } else if (planoBasico) {
+        return planoBasico->getLimiteLivros();
+    }
+    return 0;
+}
+
+int PlanoAtual::getLivrosAcessados() const {
+    if (isPro && planoPro) {
+        return planoPro->getLivrosAcessados();
+    } else if (planoBasico) {
+        return planoBasico->getLivrosAcessados();
+    }
+    return 0;
 }
 
 bool PlanoAtual::getIsPro() const {

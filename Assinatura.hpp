@@ -14,6 +14,8 @@ private:
 public:
     Assinatura(bool isPro);
 
+    ~Assinatura();
+
     void acessarLivro();
     void resetarLivrosAcessados();
 
