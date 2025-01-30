@@ -1,97 +1,127 @@
 #include <iostream>
-#include <vector>
+#include <fstream>
 #include <string>
+#include <sstream>
 
 #include "CadastroLogin.hpp"
-#include "Catalogo.hpp"
-#include "PlanoAtual.hpp"
+#include "Login.hpp"
+#include "Assinatura.hpp"
 #include "PaginaDaConta.hpp"
-#include <iostream>
-#include <unordered_map>
-#include <string>
+#include "Pix.hpp"
+#include "Credito.hpp"
+#include "Debito.hpp"
+#include "Pessoa.hpp"
+#include "Catalogo.hpp"
 
-using namespace std;
+bool verificarLogin(const std::string& email, const std::string& senha, std::string& nome, std::string& tipoPlano) {
+    std::ifstream arquivo("usuarios.csv");
 
-unordered_map<string, CadastroLogin> usuarios;
+    if (!arquivo.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo CSV para leitura." << std::endl;
+        return false;
+    }
 
-void cadastrarUsuario() {
-    string nome, email, senha, cpf;
+    std::string linha;
+    while (std::getline(arquivo, linha)) {
+        std::stringstream ss(linha);
+        std::string nomeArquivo, cpf, emailArquivo, senhaArquivo, tipoPlanoArquivo, metodoPagamento, valorPagamento;
 
-    cout << "\nDigite seu nome: ";
-    cin.ignore();
-    getline(cin, nome);
+       
+        std::getline(ss, nomeArquivo, ',');
+        std::getline(ss, cpf, ',');
+        std::getline(ss, emailArquivo, ',');
+        std::getline(ss, senhaArquivo, ',');
+        std::getline(ss, tipoPlanoArquivo, ',');
+        std::getline(ss, metodoPagamento, ',');
+        std::getline(ss, valorPagamento, ',');
 
-    cout << "Digite seu CPF: ";
-    cin >> cpf;
+        
+        if (email == emailArquivo && senha == senhaArquivo) {
+            nome = nomeArquivo;
+            tipoPlano = tipoPlanoArquivo;
+            return true;
+        }
+    }
 
-    cout << "Digite seu email: ";
-    cin >> email;
+    return false; 
+}
 
-    cout << "Digite sua senha: ";
-    cin >> senha;
 
-    if (usuarios.find(email) != usuarios.end()) {
-        cout << "\nEmail já cadastrado!\n";
+
+void salvarDadosNoCSV(const CadastroLogin& usuario, const Assinatura& assinatura, const Pagamentos& pagamento) {
+    std::ofstream arquivo("usuarios.csv", std::ios::app);
+
+    if (!arquivo.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo CSV para salvar os dados." << std::endl;
         return;
     }
 
-    usuarios[email] = CadastroLogin(nome, cpf, email, senha);
-    cout << "\nCadastro realizado com sucesso!\n";
+    arquivo << usuario.getNome() << ","
+            << usuario.getCPF() << ","
+            << usuario.getEmail() << ","
+            << usuario.getSenha() << ","
+            << assinatura.getTipoPlano() << ","
+            << pagamento.getMetodo() << ","
+            << pagamento.getValor() << std::endl;
+
+    arquivo.close();
+    std::cout << "Dados salvos com sucesso!" << std::endl;
 }
-
-bool loginUsuario(CadastroLogin& usuarioAtual) {
-    string email, senha;
-
-    cout << "\nDigite seu email: ";
-    cin >> email;
-    cout << "Digite sua senha: ";
-    cin >> senha;
-
-    if (usuarios.find(email) != usuarios.end() && usuarios[email].getSenha() == senha) {
-        usuarioAtual = usuarios[email];
-        cout << "\nLogin realizado com sucesso!\n";
-        return true;
-    }
-
-    cout << "\nEmail ou senha incorretos!\n";
-    return false;
-}
-
-void menuPrincipal(CadastroLogin& usuarioAtual) {
-    PlanoAtual plano(false); // Padrão: Plano Básico
-    Catalogo catalogo;
-    catalogo.carregarLivros("livros.txt"); // Nome fictício para o arquivo de livros
-
-
 
 int main() {
-    int escolha;
-    CadastroLogin usuarioAtual("", "", "", "");
+    std::string nome, email, senha, metodoPagamento, cpf,tipoPlano;
+    bool isPro;
+    double valorPagamento;
+ int opcao;
+    std::cout << "Bem-vindo ao sistema! Escolha uma opcao:" << std::endl;
+    std::cout << "1 - Login" << std::endl;
+    std::cout << "2 - Cadastro" << std::endl;
+    std::cout << "3 - Fechar o programa" << std::endl;
+    std::cin >> opcao;
+    std::cin.ignore();
 
-    do {
-        cout << "\n--- Bem-vindo ao Sistema ---\n";
-        cout << "1. Fazer login\n";
-        cout << "2. Cadastrar\n";
-        cout << "3. Sair\n";
-        cout << "Escolha uma opção: ";
-        cin >> escolha;
+    if (opcao == 1) {
+    std::string email, senha;
+        std::cout << "Digite seu email: ";
+        std::getline(std::cin, email);
 
-        switch (escolha) {
-        case 1:
-    std::cout << "Digite seu email: ";
-    std::getline(std::cin, email);
+        std::cout << "Digite sua senha: ";
+        std::getline(std::cin, senha);
 
-    std::cout << "Digite sua senha: ";
-    std::getline(std::cin, senha);
+        if (verificarLogin(email, senha, nome, tipoPlano)) {
+    std::cout << "Login bem-sucedido!" << std::endl;
+    std::cout << "Bem-vindo, " << nome << "!" << std::endl;
+    std::cout << "Seu plano de assinatura: " << tipoPlano << std::endl;
 
-            break;
-        case 2:
-                std::cout << "Digite seu nome: ";
+    
+    int limiteLivros;
+    if (tipoPlano == "Pro" || tipoPlano == "pro") {
+        isPro = 1;
+        limiteLivros = 10;
+    } else if (tipoPlano == "Basico" || tipoPlano == "basico") {
+        isPro = 0;
+        limiteLivros = 5;
+    } else {
+        std::cerr << "Tipo de plano desconhecido: " << tipoPlano << std::endl;
+        return 0;
+    }
+
+    int livrosAcessados = 0; 
+    std::cout << "Nome: " << nome << std::endl;
+    std::cout << "Tipo de Assinatura: " << tipoPlano << std::endl;
+    std::cout << "Livros Disponíveis: " << limiteLivros - livrosAcessados << std::endl;
+} else {
+    std::cout << "Email ou senha incorretos." << std::endl;
+    return 0;
+}
+    } else if (opcao == 2){
+    std::cout << "Bem-vindo ao sistema! Por favor, preencha seus dados." << std::endl;
+
+    std::cout << "Digite seu nome: ";
     std::getline(std::cin, nome);
 
     std::cout << "Digite seu CPF: ";
-    std::cin >> cpf;
-    std::cin.ignore();
+    std::getline(std::cin, cpf);
 
     std::cout << "Digite seu email: ";
     std::getline(std::cin, email);
@@ -101,65 +131,124 @@ int main() {
 
     CadastroLogin usuario(nome, cpf, email, senha);
 
-    std::cout << "Escolha seu plano (0 - Básico, 1 - Pro): ";
+    std::cout << "Escolha seu plano (0 - Basico, 1 - Pro): ";
     std::cin >> isPro;
-    std::cin.ignore();
+    std::cin.ignore();  
 
     Assinatura assinatura(isPro);
-    valorPagamento = isPro ? 50.0 : 20.0; // Exemplo de valores para planos
-
-    std::cout << "Escolha a forma de pagamento (Pix, Crédito, Débito): ";
-    std::getline(std::cin, metodoPagamento);
+    valorPagamento = isPro ? 50.0 : 20.0; 
 
     Pagamentos* pagamento = nullptr;
+   
+    while (true) {
+        std::cout << "Escolha a forma de pagamento (Pix, Credito, Debito): ";
+        
+       
+        std::getline(std::cin, metodoPagamento);  
 
-    if (metodoPagamento == "Pix") {
-        std::string chavePix;
-        std::cout << "Digite a chave Pix: ";
-        std::getline(std::cin, chavePix);
-        pagamento = new Pix(metodoPagamento, valorPagamento, chavePix);
-    } else if (metodoPagamento == "Crédito") {
-        std::string numeroCartao, validade, cvv;
-        std::cout << "Digite o número do cartão: ";
-        std::getline(std::cin, numeroCartao);
-        std::cout << "Digite a validade (MM/AA): ";
-        std::getline(std::cin, validade);
-        std::cout << "Digite o CVV: ";
-        std::getline(std::cin, cvv);
-        pagamento = new Credito(metodoPagamento, valorPagamento, numeroCartao, validade, cvv);
-    } else if (metodoPagamento == "Débito") {
-        std::string numeroCartao, validade, cvv;
-        std::cout << "Digite o número do cartão: ";
-        std::getline(std::cin, numeroCartao);
-        std::cout << "Digite a validade (MM/AA): ";
-        std::getline(std::cin, validade);
-        std::cout << "Digite o CVV: ";
-        std::getline(std::cin, cvv);
-        pagamento = new Debito(metodoPagamento, valorPagamento, numeroCartao, validade, cvv);
-    } else {
-        std::cerr << "Método de pagamento inválido!" << std::endl;
-        return 1;
+       
+        if (metodoPagamento == "Pix" || metodoPagamento == "pix") {
+            std::string chavePix;
+            std::cout << "Digite a chave Pix: ";
+            std::getline(std::cin, chavePix);
+            pagamento = new Pix(metodoPagamento, valorPagamento, chavePix);
+            break;  
+        } else if (metodoPagamento == "Credito" || metodoPagamento == "credito") {
+            std::string numeroCartao, validade, cvv;
+            std::cout << "Digite o numero do cartao: ";
+            std::getline(std::cin, numeroCartao);
+            std::cout << "Digite a validade (MM/AA): ";
+            std::getline(std::cin, validade);
+            std::cout << "Digite o CVV: ";
+            std::getline(std::cin, cvv);
+            pagamento = new Credito(metodoPagamento, valorPagamento, numeroCartao, validade, cvv);
+            break;
+        } else if (metodoPagamento == "Debito" || metodoPagamento == "debito") {
+            std::string numeroCartao, validade, cvv;
+            std::cout << "Digite o numero do cartao: ";
+            std::getline(std::cin, numeroCartao);
+            std::cout << "Digite a validade (MM/AA): ";
+            std::getline(std::cin, validade);
+            std::cout << "Digite o CVV: ";
+            std::getline(std::cin, cvv);
+            pagamento = new Debito(metodoPagamento, valorPagamento, numeroCartao, validade, cvv);
+            break;
+        } else {
+            std::cout << "Metodo de pagamento invalido!" << std::endl;
+        }
+    }
+    
+   
+    salvarDadosNoCSV(usuario, assinatura, *pagamento);
+    } else if(opcao == 3){
+        std::exit(0);
     }
 
-    // Exibir informações na página da conta
-    PaginaDaConta conta(usuario.getNome(), &assinatura);
-    conta.exibirInformacoes();
+Assinatura assinatura(isPro);
+CadastroLogin usuario(nome, cpf, email, senha);
+Pagamentos* pagamento = nullptr;
 
-    // Salvar dados no arquivo CSV
-    salvarDadosNoCSV(usuario, assinatura, *pagamento);
+    while (true) {
+        int Limite = assinatura.getLimiteLivros();
+        int resto = assinatura.getLivrosAcessados();
+        while(true){
+        std::cout << "\n=== Seja bem-vindo ao Quindle ===\n";
+        PaginaDaConta conta(usuario.getNome(), &assinatura);
+        conta.exibirInformacoes();
 
-    // Limpeza
-    delete pagamento;
+        std::string AcessarLivro;
+        std::cout << "\nDeseja acessar um livro (S/N)? (Caso deseje fechar o programa, pressione F): ";
+        std::cin >> AcessarLivro;
 
-    return 0;
+        if ((AcessarLivro == "S" && Limite > resto )  || (AcessarLivro == "s" && Limite > resto)) {
+            break;
+        } else if((AcessarLivro == "S" && Limite <= resto )  || (AcessarLivro == "s" && Limite <= resto)){
+            std::cout << "Voce chegou ao limite de livros para esse mes. Espere ate o proximo mes para poder ler mais. " << std::endl; 
+        }else if (AcessarLivro == "N" || AcessarLivro == "n") {
+            std::cout << "Ok, voltando a pagina inicial." << std::endl;
+        }  else if(AcessarLivro == "F" || AcessarLivro == "f"){
+            std::exit(0);
+        } else {
+            std::cout << "Comando invalido. Voltando a pagina inicial." << std::endl;
+        } 
+        }
+
+    Catalogo catalogo;
+    catalogo.carregarLivros("livros.csv");
+    catalogo.exibirLivros();
+
+    while(true){
+
+        int escolhaLivro;
+    std::cout << "\nEscolha o numero do livro que deseja acessar ([0, 1, 2 ... n] para escolher qual livro, de acordo com a ordem que aparecem na tela): " << std::endl;
+    std::cin >> escolhaLivro;
+        
+        if (escolhaLivro >= 0 && escolhaLivro < catalogo.getLivros().size()) {
+        const Livro& livroEscolhido = catalogo.getLivros()[escolhaLivro];
+        std::cout << "\nVoca esta acessando o livro: " << livroEscolhido.getTitulo() << "\n";
+        std::cout << "Autor: " << livroEscolhido.getAutor() << "\n";
+        break;
+    } else {
+        std::cout << "Escolha invalida! Escolha novamente." << std::endl;
+    }
+    }
+    
+    while(true){
+        std::string continuaracesso;
+    std::cout << "Continuar acessando esse livro(S/N): ";
+    std::cin >> continuaracesso;
+     if (continuaracesso == "S" || continuaracesso == "s") {
+          std::cout << "\nVoce continua acessando esse livro" << std::endl;
+        } else if (continuaracesso == "N" || continuaracesso == "n") {
+            std::cout << "Ok, voltando a pagina inicial." << std::endl;
+            assinatura.acessarLivro();
+           break;
+        } else {
+           std::cout << "Escolha invalida! Escolha novamente." << std::endl;
+        }
 }
 
-        case 3:
-            cout << "\nSaindo...\n";
-            break;
-        default:
-            cout << "\nOpção inválida!\n";
-        }
-    } while (escolha != 3);
-
-    return 0;
+    
+    delete pagamento;
+}
+}
